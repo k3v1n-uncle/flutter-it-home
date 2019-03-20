@@ -1,6 +1,5 @@
-# it_home
+# Flutter 写的仿IT之家app，仅交流学习用，持续更新中。。。
 
-A new Flutter application.
 
 ## Getting Started
 
