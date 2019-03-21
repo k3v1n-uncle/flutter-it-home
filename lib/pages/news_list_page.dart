@@ -12,7 +12,7 @@ class NewsList extends StatefulWidget {
   @override
   NewsList({Key key, this.newsType}) : super(key: key);
 
-  _NewsListState createState() => new _NewsListState();
+  _NewsListState createState() => new _NewsListState(this.newsType);
 }
 
 class _NewsListState extends State<NewsList>
@@ -20,7 +20,8 @@ class _NewsListState extends State<NewsList>
   @protected
   bool get wantKeepAlive => true;
 //其他逻辑
-
+  _NewsListState(this.newsType);
+  String newsType;
   List articleList = [];
   List swiperList = [];
   int page = 1;
@@ -29,7 +30,6 @@ class _NewsListState extends State<NewsList>
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadSwiperList();
     loadArticleList();
   }
 
@@ -38,24 +38,29 @@ class _NewsListState extends State<NewsList>
   }
 
   Future loadSwiperList() async {
-    if (widget.newsType == 'news') {
+    if (newsType == 'news') {
       String url = Api.swiperList;
       var data = {'pageIndex': 1, 'pageSize': 10};
       var response = await HttpUtil().get(url, data: data);
       setState(() {
         swiperList = response;
+        loading = false;
+      });
+    } else {
+      setState(() {
+        loading = false;
       });
     }
   }
 
   Future loadArticleList() async {
-    String url = Api.articleList + widget.newsType;
+    String url = Api.articleList + newsType;
     var data = {'pageIndex': 1, 'pageSize': 10};
     var response = await HttpUtil().get(url, data: data);
     setState(() {
       articleList = response['newslist'];
-      loading = false;
     });
+    loadSwiperList();
   }
 
   @override
@@ -66,15 +71,13 @@ class _NewsListState extends State<NewsList>
             child: CircularProgressIndicator(),
           )
         : ListView(
-//            shrinkWrap: true,
-//            physics: const AlwaysScrollableScrollPhysics(),
             children: <Widget>[
-              widget.newsType == 'news'
+              newsType == 'news'
                   ? Container(
                       margin: EdgeInsets.symmetric(
                         vertical: ScreenUtil.getInstance().setHeight(30),
                       ),
-                      height: ScreenUtil.getInstance().setHeight(400),
+                      height: ScreenUtil.getInstance().setHeight(500),
                       child: new Swiper(
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
@@ -300,7 +303,7 @@ class _NewsListState extends State<NewsList>
                           ),
                         ),
                         new Text(
-                          '${newsInfo["commentcount"]}',
+                          '${newsInfo["commentcount"]}评',
                           style: TextStyle(
                             fontSize:
                                 ScreenUtil(allowFontScaling: true).setSp(32),

@@ -5,6 +5,7 @@ import 'package:it_home/tools/api.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:it_home/pages/article_detail_page.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Map article; //新闻类型
@@ -19,12 +20,14 @@ class ArticleDetailPage extends StatefulWidget {
 
 class ArticleDetailPageState extends State<ArticleDetailPage> {
   Map articleDetail = {};
+  List articleList = [];
   bool loading = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadArticleDetail();
+    loadArticleList();
   }
 
   void dispose() {
@@ -39,6 +42,20 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
     var response = await HttpUtil().get(url, data: data);
     setState(() {
       articleDetail = response;
+      loading = false;
+    });
+  }
+
+  Future loadArticleList() async {
+    String url = Api.articleList + 'android';
+    var data = {
+      'pageIndex': 1,
+    };
+    var response = await HttpUtil().get(url, data: data);
+    setState(() {
+      for (var i = 0; i < 5; i++) {
+        articleList.add(response['newslist'][i]);
+      }
       loading = false;
     });
   }
@@ -82,7 +99,7 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
                   child: Container(
                     width: ScreenUtil.getInstance().setWidth(700),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Text(
                           '${widget.article['postdate'].toString().substring(0, 10)} ${widget.article['postdate'].toString().substring(11, 16)}',
@@ -113,8 +130,9 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
               ${articleDetail['detail']}
               """,
                   //Optional parameters:
-                  padding:
-                      EdgeInsets.all(ScreenUtil.getInstance().setWidth(40)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ScreenUtil.getInstance().setWidth(30),
+                  ),
                   backgroundColor: Colors.white70,
                   defaultTextStyle: TextStyle(
 //                    fontFamily: 'serif',
@@ -135,19 +153,67 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
 //                }
 //              }
                   },
-                )
+                ),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ScreenUtil.getInstance().setWidth(30),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '责任编辑：${articleDetail['newsauthor']}',
+                          style: TextStyle(
+                            fontSize:
+                                ScreenUtil(allowFontScaling: true).setSp(42),
+                            color: Color(0xff656565),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: 10.0,
+                      height: 30.0,
+                      color: Color(0xfff44f44),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '相关文章',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(50),
+                        color: Color(0xff353535),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: _newsRow(),
+                ),
               ],
             ),
     );
   }
 
   //新闻列表单个item
-  Widget _newsRow(newsInfo) {
-    if (newsInfo["imagelist"] != null) {
-      return _generateThreePicItem(newsInfo);
-    } else {
-      return _generateOnePicItem(newsInfo);
+  List<Widget> _newsRow() {
+    List<Widget> children = [];
+    for (var i = 0; i < articleList.length; i++) {
+      children.add(
+        _generateOnePicItem(articleList[i]),
+      );
     }
+    return children;
   }
 
   //仅有一个图片时的效果
@@ -164,12 +230,12 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
 
     return InkWell(
       onTap: () {
-//        Navigator.push(
-//            context,
-//            MaterialPageRoute(
-//              builder: (BuildContext context) =>
-//                  ArticleDetailScreen(articleId: this.articleId.toString()),
-//            ));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  ArticleDetailPage(article: newsInfo),
+            ));
       },
       child: Container(
         padding: EdgeInsets.only(
@@ -267,116 +333,5 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
         ),
       ),
     );
-  }
-
-  //有三张图片时的效果
-  _generateThreePicItem(Map newsInfo) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    //屏幕左右的PADDING
-    double screenPadding = 15.0;
-    //每个图片中间的空格
-    double wrapSpacing = 5.0;
-    //Row_width
-    double rowWidth = screenWidth - screenPadding * 2;
-    //计算每个图片的宽度，多减掉0.1避免换行
-
-    return new InkWell(
-      onTap: () {
-//        Navigator.push(
-//            context,
-//            MaterialPageRoute(
-//              builder: (BuildContext context) =>
-//                  ArticleDetailScreen(articleId: this.articleId.toString()),
-//            ));
-      },
-      child: Container(
-          padding: EdgeInsets.only(
-              left: screenPadding,
-              top: wrapSpacing,
-              right: screenPadding,
-              bottom: wrapSpacing),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  '${newsInfo["title"]}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: TextStyle(
-                    fontSize: ScreenUtil(allowFontScaling: true).setSp(40),
-                    color: Color(0xff353535),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  width: rowWidth,
-                  child: Wrap(
-                      spacing: wrapSpacing, // gap between adjacent chips
-                      children: _createImageChildren(
-                          newsInfo['imagelist'], rowWidth, wrapSpacing)),
-                ),
-                Container(
-                    margin: EdgeInsets.only(top: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          '${newsInfo["postdate"].toString().substring(0, 10)} ${newsInfo["postdate"].toString().substring(11, 19)}',
-                          style: TextStyle(
-                            fontSize:
-                                ScreenUtil(allowFontScaling: true).setSp(32),
-                            color: Color(0xff959595),
-                          ),
-                        ),
-                        new Text(
-                          '${newsInfo["commentcount"]}',
-                          style: TextStyle(
-                            fontSize:
-                                ScreenUtil(allowFontScaling: true).setSp(32),
-                            color: Color(0xff959595),
-                          ),
-                        ),
-                      ],
-                    )),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                          bottom: BorderSide(
-                        color: Colors.black12,
-                        //width: 0.5
-                      ))),
-                )
-              ])),
-    );
-  }
-
-  List<Widget> _createImageChildren(mainAddonUrls, rowWidth, wrapSpacing) {
-    double imageWidth = 0.0;
-    int imageLength = mainAddonUrls.length;
-    if (imageLength > 3) {
-      imageLength = 3;
-    }
-    if (imageLength > 0) {
-      imageWidth = (rowWidth - wrapSpacing * 2) / imageLength - 0.5;
-    }
-    List<Widget> children = [];
-    int currentLength = 1;
-    for (var mainPhotoUrl in mainAddonUrls) {
-      if (currentLength > 3) {
-        break;
-      }
-      currentLength++;
-
-      children.add(CachedNetworkImage(
-          imageUrl: mainPhotoUrl,
-          fadeInDuration: const Duration(milliseconds: 100),
-          fadeOutDuration: const Duration(milliseconds: 100),
-          fit: BoxFit.cover,
-          width: imageWidth,
-          height: 80.0));
-    }
-    return children;
   }
 }

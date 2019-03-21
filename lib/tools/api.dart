@@ -3,6 +3,7 @@ class Api {
   static const swiperList = '/slide/index';
   static const articleList = '/newslist/';
   static const articleDetail = '/newscontent/';
+  static const articleLinks = '/tags/';
 }
 //首页轮播图 https://api.ithome.com/json/slide/index?=1552489235685
 //首页列表/最新 https://api.ithome.com/json/newslist/news?r=1552489235854

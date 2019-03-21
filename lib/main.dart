@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:it_home/pages/main_pages/MainPage.dart';
+import 'package:it_home/pages/splash_page.dart';
 
 void main() {
   runApp(new MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         primaryColor: Color(0xffffffff),
       ),
-      home: IndexPage(),
+      home: SplashPage(),
     );
   }
 }

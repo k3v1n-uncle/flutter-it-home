@@ -124,7 +124,7 @@ packages:
       name: flutter_swiper
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.4"
+    version: "1.1.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -226,6 +226,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.5.4"
+  splashscreen:
+    dependency: "direct main"
+    description:
+      name: splashscreen
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.0"
   sqflite:
     dependency: transitive
     description:
@@ -281,7 +288,7 @@ packages:
       name: transformer_page_view
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   typed_data:
     dependency: transitive
     description:

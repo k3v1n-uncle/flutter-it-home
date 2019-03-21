@@ -28,8 +28,9 @@ dependencies:
   shared_preferences: ^0.5.1+1
   cached_network_image: ^0.7.0
   flutter_screenutil: ^0.5.1
-  flutter_swiper: ^1.1.4
+  flutter_swiper: ^1.1.5
   flutter_html: ^0.9.6
+  splashscreen: ^1.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +50,9 @@ flutter:
   assets:
     - lib/images/ithome_logo.png
     - lib/images/favicon.png
+    - lib/images/splash_1.jpg
+    - lib/images/splash_2.jpg
+    - lib/images/splash_3.jpg
 #    - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
