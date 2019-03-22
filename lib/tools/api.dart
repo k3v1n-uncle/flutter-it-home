@@ -2,10 +2,12 @@ class Api {
   static const baseUrl = 'https://api.ithome.com/json';
   static const swiperList = '/slide/index';
   static const articleList = '/newslist/';
+  static const articleListMore = '/listpage/';
   static const articleDetail = '/newscontent/';
   static const articleLinks = '/tags/';
 }
 //首页轮播图 https://api.ithome.com/json/slide/index?=1552489235685
+//首页轮播图 https://api.ithome.com/json/listpage/news/0f60b51de31f03c91143324895ebc8d0
 //首页列表/最新 https://api.ithome.com/json/newslist/news?r=1552489235854
 //文章搜索 https://api.ithome.com/json/newslist/sanxing
 //首页列表/原创 https://api.ithome.com/json/newslist/original

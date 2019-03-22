@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:it_home/pages/article_detail_page.dart';
+import 'dart:async';
 
 class NewsList extends StatefulWidget {
   final String newsType; //新闻类型
@@ -20,16 +21,41 @@ class _NewsListState extends State<NewsList>
   @protected
   bool get wantKeepAlive => true;
 //其他逻辑
-  _NewsListState(this.newsType);
+
   String newsType;
   List articleList = [];
   List swiperList = [];
   int page = 1;
   bool loading = true;
+  int curPage = 1;
+  ScrollController _controller = new ScrollController();
+  _NewsListState(
+    this.newsType,
+  );
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _controller.addListener(() async {
+      var maxScroll = _controller.position.maxScrollExtent;
+      var pixels = _controller.position.pixels;
+      if (maxScroll == pixels) {
+//        上拉刷新做处理
+        print('load more ...');
+        curPage++;
+        String url = Api.articleListMore +
+            newsType +
+            '/0f60b51de31f03c91143324895ebc8d$curPage';
+        var data = {
+          'pageIndex': curPage,
+        };
+        var response = await HttpUtil().get(url, data: data);
+        setState(() {
+          articleList.addAll(response['newslist']);
+        });
+      }
+    });
     loadArticleList();
   }
 
@@ -37,25 +63,50 @@ class _NewsListState extends State<NewsList>
     super.dispose();
   }
 
+  Future<Null> _pullToRefresh() async {
+    setState(() {
+      curPage = 1;
+    });
+    //下拉刷新做处理
+    String url = Api.articleList + newsType;
+    var data = {
+      'pageIndex': curPage,
+    };
+    var response = await HttpUtil().get(url, data: data);
+    setState(() {
+      articleList = response['newslist'];
+    });
+  }
+
   Future loadSwiperList() async {
     if (newsType == 'news') {
       String url = Api.swiperList;
-      var data = {'pageIndex': 1, 'pageSize': 10};
+      var data = {
+        'pageIndex': 1,
+      };
       var response = await HttpUtil().get(url, data: data);
       setState(() {
         swiperList = response;
-        loading = false;
+      });
+      new Timer(new Duration(microseconds: 500), () {
+        setState(() {
+          loading = false;
+        });
       });
     } else {
-      setState(() {
-        loading = false;
+      new Timer(new Duration(microseconds: 500), () {
+        setState(() {
+          loading = false;
+        });
       });
     }
   }
 
   Future loadArticleList() async {
     String url = Api.articleList + newsType;
-    var data = {'pageIndex': 1, 'pageSize': 10};
+    var data = {
+      'pageIndex': curPage,
+    };
     var response = await HttpUtil().get(url, data: data);
     setState(() {
       articleList = response['newslist'];
@@ -70,56 +121,59 @@ class _NewsListState extends State<NewsList>
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : ListView(
-            children: <Widget>[
-              newsType == 'news'
-                  ? Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: ScreenUtil.getInstance().setHeight(30),
-                      ),
-                      height: ScreenUtil.getInstance().setHeight(500),
-                      child: new Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5.0),
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: CachedNetworkImageProvider(
-                                    '${swiperList[index]['image']}'),
-                              ),
-                            ),
-                          );
-                        },
-                        autoplay: true,
-                        pagination: new SwiperPagination(
-                          margin: new EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
-                          builder: new DotSwiperPaginationBuilder(
-                              color: Colors.white,
-                              activeColor: Color(0xfff44f44),
-                              size: 5.0,
-                              activeSize: 5.0),
+        : new RefreshIndicator(
+            child: new ListView(
+              controller: _controller,
+              children: <Widget>[
+                newsType == 'news'
+                    ? Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: ScreenUtil.getInstance().setHeight(30),
                         ),
-                        itemCount: swiperList.length,
-                        viewportFraction: 0.8,
-                        scale: 0.9,
-                      ),
-                    )
-                  : Container(),
-              Column(
-                children: <Widget>[
-                  new ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: articleList.length,
-                      itemBuilder: (context, i) {
-                        // return _newsRow(data[i]);//把数据项塞入ListView中
-                        return _newsRow(articleList[i]);
-                      }),
-                ],
-              ),
-            ],
-          );
+                        height: ScreenUtil.getInstance().setHeight(500),
+                        child: new Swiper(
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: CachedNetworkImageProvider(
+                                      '${swiperList[index]['image']}'),
+                                ),
+                              ),
+                            );
+                          },
+                          autoplay: true,
+                          pagination: new SwiperPagination(
+                            margin: new EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
+                            builder: new DotSwiperPaginationBuilder(
+                                color: Colors.white,
+                                activeColor: Color(0xfff44f44),
+                                size: 5.0,
+                                activeSize: 5.0),
+                          ),
+                          itemCount: swiperList.length,
+                          viewportFraction: 0.8,
+                          scale: 0.9,
+                        ),
+                      )
+                    : Container(),
+                Column(
+                  children: <Widget>[
+                    new ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: articleList.length,
+                        itemBuilder: (context, i) {
+                          // return _newsRow(data[i]);//把数据项塞入ListView中
+                          return _newsRow(articleList[i]);
+                        }),
+                  ],
+                ),
+              ],
+            ),
+            onRefresh: _pullToRefresh);
   }
 
   //新闻列表单个item

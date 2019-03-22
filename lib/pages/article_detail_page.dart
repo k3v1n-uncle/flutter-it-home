@@ -5,7 +5,6 @@ import 'package:it_home/tools/api.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:it_home/pages/article_detail_page.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final Map article; //新闻类型

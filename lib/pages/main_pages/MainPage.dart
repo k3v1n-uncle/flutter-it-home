@@ -15,9 +15,10 @@ class _IndexPageState extends State<IndexPage> {
   List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(
         icon: Icon(Icons.chrome_reader_mode), title: Text('资讯')),
-    BottomNavigationBarItem(icon: Icon(Icons.group), title: Text('通讯录')),
-    BottomNavigationBarItem(icon: Icon(Icons.directions), title: Text('发现')),
-    BottomNavigationBarItem(icon: Icon(Icons.person_outline), title: Text('我的'))
+    BottomNavigationBarItem(icon: Icon(Icons.whatshot), title: Text('辣品')),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.supervised_user_circle), title: Text('圈子')),
+    BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('我的'))
   ];
   List<Widget> _pages = [
     MyHomePage(),

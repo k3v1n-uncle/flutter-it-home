@@ -74,6 +74,29 @@ class _MyHomePageState extends State<MyHomePage>
             indicatorSize: TabBarIndicatorSize.label,
             isScrollable: true,
           ),
+          actions: <Widget>[
+            Icon(
+              Icons.date_range,
+              color: Color(0xff656565),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            Icon(
+              Icons.search,
+              color: Color(0xff656565),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            Icon(
+              Icons.more_vert,
+              color: Color(0xff656565),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+          ],
         ),
         preferredSize:
             Size.fromHeight(ScreenUtil.getInstance().setHeight(2220) * 0.1),
