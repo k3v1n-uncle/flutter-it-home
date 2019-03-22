@@ -222,7 +222,7 @@ class _NewsListState extends State<NewsList>
                   width: imageWidth,
                   height: 80.0,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
+                    borderRadius: BorderRadius.circular(3.0),
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: CachedNetworkImageProvider('${newsInfo['image']}'),
@@ -397,13 +397,19 @@ class _NewsListState extends State<NewsList>
       }
       currentLength++;
 
-      children.add(CachedNetworkImage(
-          imageUrl: mainPhotoUrl,
-          fadeInDuration: const Duration(milliseconds: 100),
-          fadeOutDuration: const Duration(milliseconds: 100),
-          fit: BoxFit.cover,
+      children.add(
+        Container(
           width: imageWidth,
-          height: 80.0));
+          height: 80.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3.0),
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: CachedNetworkImageProvider(mainPhotoUrl),
+            ),
+          ),
+        ),
+      );
     }
     return children;
   }
