@@ -5,6 +5,8 @@ class Api {
   static const articleListMore = '/listpage/';
   static const articleDetail = '/newscontent/';
   static const articleLinks = '/tags/';
+  static const articleComments =
+      'https://dyn.ithome.com/api/comment/getnewscomment';
 }
 //首页轮播图 https://api.ithome.com/json/slide/index?=1552489235685
 //首页轮播图 https://api.ithome.com/json/listpage/news/0f60b51de31f03c91143324895ebc8d0

@@ -20,6 +20,7 @@ class ArticleDetailPage extends StatefulWidget {
 class ArticleDetailPageState extends State<ArticleDetailPage> {
   Map articleDetail = {};
   List articleList = [];
+  List articleComments = [];
   bool loading = true;
   @override
   void initState() {
@@ -27,6 +28,7 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
     super.initState();
     loadArticleDetail();
     loadArticleList();
+    loadArticleComments();
   }
 
   void dispose() {
@@ -41,6 +43,18 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
     var response = await HttpUtil().get(url, data: data);
     setState(() {
       articleDetail = response;
+      loading = false;
+    });
+  }
+
+  Future loadArticleComments() async {
+    String url = Api.articleComments + '?sn=c0fa3b6d2022ced7';
+    var data = {
+      'pageIndex': 1,
+    };
+    var response = await HttpUtil().get(url, data: data);
+    setState(() {
+      articleComments = response['hlist'];
       loading = false;
     });
   }
@@ -199,6 +213,38 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
                 Column(
                   children: _newsRow(),
                 ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Icon(
+                      Icons.chrome_reader_mode,
+                      size: ScreenUtil().setSp(70),
+                      color: Color(0xffFF0000),
+                    ),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      '全部评论',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(50),
+                        color: Color(0xffFF0000),
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(
+                  color: Colors.grey[300],
+                ),
+                Column(
+                  children: _CommentRow(),
+                ),
               ],
             ),
     );
@@ -213,6 +259,184 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
       );
     }
     return children;
+  }
+
+  List<Widget> _CommentRow() {
+    List<Widget> children = [];
+    for (var i = 0; i < articleComments.length; i++) {
+      children.add(
+        _commentItem(articleComments[i]),
+      );
+    }
+    return children;
+  }
+
+  _commentItem(Map commentInfo) {
+    var phoneColor =
+        int.parse('0xff${commentInfo['M']['Ci'].toString().substring(0, 6)}');
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: ScreenUtil.getInstance().setWidth(20),
+        vertical: ScreenUtil.getInstance().setHeight(20),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: ScreenUtil.getInstance().setWidth(200),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundImage: CachedNetworkImageProvider(
+                      'http://avatar.ithome.com/avatars/000/19/21/10_60.jpg'),
+                ),
+                SizedBox(
+                  height: ScreenUtil.getInstance().setHeight(20),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: ScreenUtil.getInstance().setHeight(10),
+                    horizontal: ScreenUtil.getInstance().setWidth(20),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(
+                      5.0,
+                    ),
+                  ),
+                  child: Text(
+                    'LV.${commentInfo['M']['Ul']}',
+                    style: TextStyle(
+                      fontSize: ScreenUtil(allowFontScaling: true).setSp(32),
+                      color: Color(0xff656565),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              '${commentInfo['M']['N']}',
+                              style: TextStyle(
+                                fontSize: ScreenUtil(allowFontScaling: true)
+                                    .setSp(40),
+                                color: Color(0xff353535),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Text(
+                              '${commentInfo['M']['Ta']}',
+                              style: TextStyle(
+                                fontSize: ScreenUtil(allowFontScaling: true)
+                                    .setSp(40),
+                                color: Color(phoneColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              '${commentInfo['M']['Y']}',
+                              style: TextStyle(
+                                fontSize: ScreenUtil(allowFontScaling: true)
+                                    .setSp(32),
+                                color: Color(0xff959595),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Text(
+                              '${commentInfo['M']['T'].toString().substring(0, 10)}',
+                              style: TextStyle(
+                                fontSize: ScreenUtil(allowFontScaling: true)
+                                    .setSp(32),
+                                color: Color(0xff959595),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${commentInfo['M']['SF']}',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(36),
+                        color: Color(0xff656565),
+                      ),
+                    ),
+                  ],
+                ),
+                Wrap(
+                  children: <Widget>[
+                    Text(
+                      '${commentInfo['M']['C']}',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(46),
+                        color: Color(0xff353535),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      '反对(${commentInfo['M']['S']})',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(36),
+                        color: Color(0xff43CD80),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '支持(${commentInfo['M']['A']})',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(36),
+                        color: Color(0xffFF0000),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '回复',
+                      style: TextStyle(
+                        fontSize: ScreenUtil(allowFontScaling: true).setSp(36),
+                        color: Color(0xff656565),
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   //仅有一个图片时的效果
@@ -257,14 +481,6 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
                       image: CachedNetworkImageProvider('${newsInfo['image']}'),
                     ),
                   ),
-//                  child: CachedNetworkImage(
-//                    imageUrl: '${newsInfo['image']}',
-//                    fadeInDuration: const Duration(milliseconds: 100),
-//                    fadeOutDuration: const Duration(milliseconds: 100),
-//                    fit: BoxFit.cover,
-//                    width: imageWidth,
-//                    height: 80.0,
-//                  ),
                 ),
                 Container(
                   height: 80.0,
