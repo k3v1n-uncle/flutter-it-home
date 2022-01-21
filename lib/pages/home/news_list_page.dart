@@ -16,7 +16,7 @@ class NewsList extends StatefulWidget {
   @override
   NewsList({Key? key, required this.newsType}) : super(key: key);
 
-  _NewsListState createState() => new _NewsListState();
+  _NewsListState createState() => _NewsListState();
 }
 
 class _NewsListState extends State<NewsList>
@@ -27,50 +27,44 @@ class _NewsListState extends State<NewsList>
 
   List articleList = [];
   List swiperList = [];
-  int page = 1;
   bool loading = true;
-  int curPage = 1;
-  ScrollController _controller = new ScrollController();
   @override
   void initState() {
     super.initState();
     print(widget.newsType);
-    _controller.addListener(() async {
-      var maxScroll = _controller.position.maxScrollExtent;
-      var pixels = _controller.position.pixels;
-      if (maxScroll == pixels) {
-//        上拉刷新做处理
-        print('load more ...');
-        curPage++;
-        String url = Api.articleListMore +
-            widget.newsType +
-            '/0f60b51de31f03c91143324895ebc8d$curPage';
-        await Ajax.doAjax(
-            context: context,
-            method: HTTP_METHOD.GET,
-            uri: url,
-            paramMap: {},
-            callBack: (response, result) async {
-              if (mounted) {
-                setState(() {
-                  articleList.addAll(result['newslist']);
-                });
-              }
-            });
-      }
-    });
+//     _controller.addListener(() async {
+//       var maxScroll = _controller.position.maxScrollExtent;
+//       var pixels = _controller.position.pixels;
+//       if (maxScroll == pixels) {
+// //        上拉刷新做处理
+//         print('load more ...');
+//         curPage++;
+//         String url = Api.articleListMore +
+//             widget.newsType +
+//             '/0f60b51de31f03c91143324895ebc8d$curPage';
+//         await Ajax.doAjax(
+//             context: context,
+//             method: HTTP_METHOD.GET,
+//             uri: url,
+//             paramMap: {},
+//             callBack: (response, result) async {
+//               if (mounted) {
+//                 setState(() {
+//                   articleList.addAll(result['newslist']);
+//                 });
+//               }
+//             });
+//       }
+//     });
     loadArticleList();
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
 
   Future<void> _pullToRefresh() async {
-    setState(() {
-      curPage = 1;
-    });
-    //下拉刷新做处理
     String url = Api.articleList + widget.newsType;
     await Ajax.doAjax(
         context: context,
@@ -87,37 +81,24 @@ class _NewsListState extends State<NewsList>
   }
 
   Future loadSwiperList() async {
-    if (widget.newsType == 'news') {
-      String url = Api.swiperList;
-      await Ajax.doAjax(
-          context: context,
-          method: HTTP_METHOD.GET,
-          uri: url,
-          paramMap: {},
-          callBack: (response, result) async {
-            if (mounted) {
-              setState(() {
-                swiperList = result;
-              });
-            }
-          });
-      Timer(new Duration(microseconds: 500), () {
-        setState(() {
-          loading = false;
+    String url = Api.swiperList;
+    await Ajax.doAjax(
+        context: context,
+        method: HTTP_METHOD.GET,
+        uri: url,
+        paramMap: {},
+        callBack: (response, result) async {
+          if (mounted) {
+            setState(() {
+              swiperList = result;
+              loading = false;
+            });
+          }
         });
-      });
-    } else {
-      Timer(new Duration(microseconds: 500), () {
-        setState(() {
-          loading = false;
-        });
-      });
-    }
   }
 
   Future loadArticleList() async {
     String url = Api.articleList + widget.newsType;
-    print(url);
 
     await Ajax.doAjax(
         context: context,
@@ -142,19 +123,20 @@ class _NewsListState extends State<NewsList>
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : new RefreshIndicator(
-            child: new ListView(
-              controller: _controller,
+        : RefreshIndicator(
+            child: ListView(
               children: <Widget>[
                 widget.newsType == 'news'
                     ? Container(
                         margin: EdgeInsets.symmetric(
                           vertical: ScreenUtil().setHeight(30),
                         ),
-                        height: ScreenUtil().setHeight(500),
-                        child: new Swiper(
+                        height: ScreenUtil().setHeight(280),
+                        child: Swiper(
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
+                              width: ScreenUtil().setWidth(696),
+                              height: ScreenUtil().setHeight(280),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5.0),
                                 image: DecorationImage(
@@ -168,9 +150,9 @@ class _NewsListState extends State<NewsList>
                             );
                           },
                           autoplay: true,
-                          pagination: new SwiperPagination(
-                            margin: new EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
-                            builder: new DotSwiperPaginationBuilder(
+                          pagination: SwiperPagination(
+                            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
+                            builder: DotSwiperPaginationBuilder(
                                 color: Colors.white,
                                 activeColor: Color(0xfff44f44),
                                 size: 5.0,
@@ -184,7 +166,7 @@ class _NewsListState extends State<NewsList>
                     : Container(),
                 Column(
                   children: <Widget>[
-                    new ListView.builder(
+                    ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: articleList.length,
@@ -286,7 +268,7 @@ class _NewsListState extends State<NewsList>
                                 color: Color(0xff959595),
                               ),
                             ),
-                            new Text(
+                            Text(
                               '${newsInfo["commentcount"]}评',
                               style: TextStyle(
                                 fontSize: ScreenUtil().setSp(32),
@@ -330,7 +312,7 @@ class _NewsListState extends State<NewsList>
     double rowWidth = screenWidth - screenPadding * 2;
     //计算每个图片的宽度，多减掉0.1避免换行
 
-    return new InkWell(
+    return InkWell(
       onTap: () {
         Navigator.push(
             context,
@@ -378,7 +360,7 @@ class _NewsListState extends State<NewsList>
                             color: Color(0xff959595),
                           ),
                         ),
-                        new Text(
+                        Text(
                           '${newsInfo["commentcount"]}评',
                           style: TextStyle(
                             fontSize: ScreenUtil().setSp(32),

@@ -9,12 +9,12 @@ import 'package:it_home_flutter/utils/api.dart';
 class ArticleDetailPage extends StatefulWidget {
   final Map article; //新闻类型
   @override
-  ArticleDetailPage({
+  const ArticleDetailPage({
     Key? key,
     required this.article,
   }) : super(key: key);
 
-  ArticleDetailPageState createState() => new ArticleDetailPageState();
+  ArticleDetailPageState createState() => ArticleDetailPageState();
 }
 
 class ArticleDetailPageState extends State<ArticleDetailPage> {
@@ -482,7 +482,7 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
                                 color: Color(0xff959595),
                               ),
                             ),
-                            new Text(
+                            Text(
                               '${newsInfo["commentcount"]}评',
                               style: TextStyle(
                                 fontSize: ScreenUtil().setSp(32),

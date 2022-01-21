@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/it_home.iml" filepath="$PROJECT_DIR$/.idea/it_home.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jingda_oa.iml" filepath="$PROJECT_DIR$/jingda_oa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/jingda_oa_android.iml" filepath="$PROJECT_DIR$/android/jingda_oa_android.iml" />
     </modules>
   </component>
 </project>

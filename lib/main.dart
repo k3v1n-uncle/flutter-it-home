@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
       builder: () => MaterialApp(
         theme: ThemeData(
           primarySwatch: createMaterialColor(Color(0xFFD20000)),
+          fontFamily: 'NotoSans',
         ),
         home: IndexPage(),
       ),
